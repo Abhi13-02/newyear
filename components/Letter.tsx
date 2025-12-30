@@ -15,7 +15,8 @@ export default function Letter() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full relative z-20 px-4 py-12">
+    <div className="min-h-screen w-full relative z-20 overflow-y-auto overflow-x-hidden">
+      <div className={`w-full px-4 py-12 ${!showLetter ? 'flex flex-col items-center justify-center min-h-screen' : ''}`}>
       <AnimatePresence mode="wait">
         {!showLetter ? (
           /* Envelope */
@@ -141,7 +142,7 @@ export default function Letter() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="w-full max-w-2xl"
+            className="w-full max-w-2xl mx-auto"
           >
             {/* Letter Paper */}
             <motion.div
@@ -257,6 +258,7 @@ export default function Letter() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </div>
   );
 }

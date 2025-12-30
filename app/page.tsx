@@ -20,7 +20,7 @@ export default function Home() {
   const handleNext = () => setStage((prev) => prev + 1);
 
   return (
-    <main className="h-screen w-full relative overflow-hidden text-white">
+    <main className="h-screen w-full relative overflow-auto text-white">
       {/* Background Stars (Static for performance, could use canvas) */}
       <div className="stars" />
       <div className="stars" style={{ animationDelay: '-1.5s' }} />
@@ -66,7 +66,7 @@ export default function Home() {
         {stage === 3 && (
           <motion.div
             key="moments"
-            className="absolute inset-0"
+            className="absolute inset-0 overflow-y-auto"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, x: -100, rotate: -10 }}
