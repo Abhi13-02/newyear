@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import HappyNewYear from './HappyNewYear';
 
 export default function Letter() {
   const [isEnvelopeOpen, setIsEnvelopeOpen] = useState(false);
   const [showLetter, setShowLetter] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const handleEnvelopeClick = () => {
     if (!isEnvelopeOpen) {
@@ -13,6 +15,14 @@ export default function Letter() {
       setTimeout(() => setShowLetter(true), 800);
     }
   };
+
+  const handleCelebrate = () => {
+    setShowCelebration(true);
+  };
+
+  if (showCelebration) {
+    return <HappyNewYear />;
+  }
 
   return (
     <div className="min-h-screen w-full relative z-20 overflow-y-auto overflow-x-hidden">
@@ -237,21 +247,52 @@ export default function Letter() {
                   <div className="text-right mt-12 font-cursive text-xl text-amber-800">
                     <p className="mb-2">Forever yours,</p>
                     <p className="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">
-                      Your Cutiepie 💕
+                      Your Sahiba 💕
                     </p>
                   </div>
                 </motion.div>
 
-                {/* Closing Message */}
+                {/* Celebrate Button */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.5 }}
-                  className="mt-12 text-center"
+                  className="mt-12 text-center space-y-4"
                 >
                   <p className="text-rose-400 text-sm opacity-60 font-serif">
                     ✨ With all my love ✨
                   </p>
+                  
+                  <motion.button
+                    onClick={handleCelebrate}
+                    className="bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 text-white px-10 py-4 rounded-full font-bold text-lg shadow-2xl hover:shadow-pink-500/50 transition-all duration-300 relative overflow-hidden group"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {/* Shine effect */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                      animate={{
+                        x: ['-100%', '200%'],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatDelay: 1,
+                      }}
+                    />
+                    <span className="relative z-10 flex items-center gap-2 justify-center">
+                      🎉 Let's Celebrate! 🎉
+                    </span>
+                  </motion.button>
+                  
+                  <motion.p
+                    className="text-amber-700/50 text-xs font-serif italic"
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    Tap to ring in the New Year together
+                  </motion.p>
                 </motion.div>
               </div>
             </motion.div>
