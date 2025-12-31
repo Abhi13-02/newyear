@@ -201,9 +201,9 @@ export default function Moments() {
           </motion.div>
         </motion.div>
 
-        {/* Photo Stack Container - Optimized */}
+        {/* Photo Stack Container - Optimized & Taller */}
         <div 
-          className="relative w-80 h-[36rem] md:w-96 md:h-[42rem] cursor-pointer"
+          className="relative w-80 h-[40rem] md:w-96 md:h-[46rem] max-h-[80vh] cursor-pointer touch-none"
           onClick={handleTap}
         >
           <AnimatePresence mode="popLayout">
@@ -219,30 +219,28 @@ export default function Moments() {
               return (
                 <motion.div
                   key={moment.id}
-                  initial={false} // Skip initial animation for better perf
+                  initial={false}
                   animate={{ 
                     scale, 
                     y: offset,
-                    opacity: 1 - i * 0.2, // Fade out back cards
+                    opacity: 1 - i * 0.2,
                     rotate: rotation,
                     zIndex: 3 - i,
                   }}
                   exit={{ 
-                    x: 200, 
+                    x: 100, // Reduced swipe distance
                     opacity: 0, 
-                    rotate: 15,
-                    transition: { duration: 0.3, ease: "easeIn" } 
+                    rotate: 10,
+                    transition: { duration: 0.2, ease: "easeIn" } 
                   }}
                   transition={{ 
-                    type: "spring", 
-                    stiffness: 300, 
-                    damping: 25,
-                    mass: 0.8 // Lighter feeling
+                    duration: 0.3, // Fixed duration is lighter than spring
+                    ease: "easeOut" 
                   }}
-                  className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl bg-white"
+                  className="absolute inset-0 rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-100"
                   style={{ 
                     transformOrigin: 'bottom center',
-                    background: '#fff', // Solid color instead of gradient
+                    background: '#fff',
                   }}
                 >
                   {/* Simplified Polaroid Frame */}
@@ -250,25 +248,36 @@ export default function Moments() {
                     {/* Image Area - Hardware accelerated */}
                     <div className="relative w-full flex-1 bg-gray-100 rounded-lg overflow-hidden translate-z-0">
                       {moment.type === 'video' ? (
-                        <video 
-                          src={moment.src} 
-                          className="w-full h-full object-cover pointer-events-none" 
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                        />
+                        /* Only autoplay if it's the top card to save resources */
+                        isTop ? (
+                          <video 
+                            src={moment.src} 
+                            className="w-full h-full object-cover pointer-events-none" 
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                          />
+                        ) : (
+                          /* Static thumbnail/placeholder for non-active videos */
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                             <span className="text-gray-400 text-xs">Video loading...</span>
+                          </div>
+                        )
                       ) : (
-                        <img 
+                        <Image 
                           src={moment.src} 
                           alt={moment.caption} 
-                          className="w-full h-full object-cover pointer-events-none"
-                          loading={i === 0 ? "eager" : "lazy"}
+                          fill
+                          className="object-cover object-top pointer-events-none"
+                          priority={i === 0}
+                          sizes="(max-width: 768px) 90vw, 400px"
+                          quality={65} // Lower quality slightly for speed, visually simpler
                         />
                       )}
                       
-                      {/* ID Badge - Static, no gradients/shadows */}
-                      <div className="absolute top-2 left-2 bg-pink-600 text-white px-2 py-1 rounded text-xs font-bold">
+                      {/* ID Badge - Static */}
+                      <div className="absolute top-2 left-2 bg-pink-600/90 text-white px-2 py-1 rounded text-xs font-bold shadow-sm">
                         #{moment.id}
                       </div>
 
@@ -282,7 +291,7 @@ export default function Moments() {
                     </div>
 
                     {/* Caption - No expensive background clips */}
-                    <div className="mt-4 text-center">
+                    <div className="mt-4 text-center shrink-0">
                       <p className="text-xl font-bold text-gray-800 font-serif">
                         {moment.caption}
                       </p>
