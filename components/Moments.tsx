@@ -26,9 +26,7 @@ import Letter from './Letter';
 export default function Moments() {
   const [index, setIndex] = useState(0);
   const [showLetter, setShowLetter] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
 
-  console.log('Moments RENDER - index:', index, 'showLetter:', showLetter);
 
   const handleNext = () => {
     console.log('Moments - handleNext called, current index:', index, 'total moments:', moments.length);
@@ -62,39 +60,26 @@ export default function Moments() {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden bg-gradient-to-br from-rose-900 via-pink-900 to-purple-900">
-      {/* Animated Background Gradient Overlay */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-tr from-pink-500/20 via-purple-500/20 to-rose-500/20"
-        animate={{
-          scale: [1, 1.2, 1],
-          rotate: [0, 90, 180, 270, 360],
-        }}
-        transition={{
-          duration: 30,
-          repeat: Infinity,
-          ease: "linear"
-        }}
-      />
+      {/* Static Background Gradient - No animation for performance */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-pink-500/20 via-purple-500/20 to-rose-500/20" />
 
-      {/* Floating Hearts Background */}
-      {[...Array(15)].map((_, i) => (
+      {/* Reduced Floating Hearts - Only 5 instead of 15 */}
+      {[...Array(5)].map((_, i) => (
         <motion.div
           key={`heart-bg-${i}`}
-          className="absolute text-pink-300/20"
+          className="absolute text-pink-300/15"
           style={{
-            left: `${(i * 7) % 100}%`,
-            fontSize: `${20 + (i % 4) * 15}px`,
+            left: `${(i * 20) % 100}%`,
+            fontSize: `${30 + (i % 2) * 20}px`,
           }}
           animate={{
             y: ['100vh', '-10vh'],
-            x: [0, Math.sin(i) * 100],
-            rotate: [0, 360],
-            opacity: [0, 0.3, 0],
+            opacity: [0, 0.2, 0],
           }}
           transition={{
-            duration: 10 + (i % 5) * 2,
+            duration: 15 + i * 3,
             repeat: Infinity,
-            delay: i * 0.7,
+            delay: i * 2,
             ease: "linear"
           }}
         >
@@ -102,28 +87,27 @@ export default function Moments() {
         </motion.div>
       ))}
 
-      {/* Sparkle Particles */}
-      {[...Array(20)].map((_, i) => (
+      {/* Reduced Sparkles - Only 6 instead of 20, no rotation */}
+      {[...Array(6)].map((_, i) => (
         <motion.div
           key={`sparkle-${i}`}
-          className="absolute"
+          className="absolute text-yellow-200/40"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
+            fontSize: '16px',
           }}
           animate={{
-            opacity: [0, 1, 0],
-            scale: [0, 1, 0],
-            rotate: [0, 180, 360],
+            opacity: [0, 0.6, 0],
           }}
           transition={{
-            duration: 3,
+            duration: 4,
             repeat: Infinity,
-            delay: i * 0.2,
+            delay: i * 0.5,
             ease: "easeInOut"
           }}
         >
-          <Sparkles className="text-yellow-200" size={12 + (i % 3) * 6} />
+          ✨
         </motion.div>
       ))}
 
@@ -217,65 +201,54 @@ export default function Moments() {
           </motion.div>
         </motion.div>
 
-        {/* Photo Stack Container with enhanced styling */}
-        <motion.div 
-          className="relative w-80 h-[36rem] md:w-96 md:h-[42rem] cursor-pointer group"
+        {/* Photo Stack Container - Optimized */}
+        <div 
+          className="relative w-80 h-[36rem] md:w-96 md:h-[42rem] cursor-pointer"
           onClick={handleTap}
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-          whileHover={{ scale: 1.02 }}
-          transition={{ type: "spring", stiffness: 300 }}
         >
-          {/* Glow effect around the card stack */}
-          <motion.div
-            className="absolute -inset-4 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 rounded-3xl blur-2xl"
-            animate={{
-              opacity: isHovering ? 0.6 : 0.3,
-              scale: isHovering ? 1.1 : 1,
-            }}
-            transition={{ duration: 0.3 }}
-          />
-
           <AnimatePresence mode="popLayout">
-            {sortedMoments.slice(index).map((moment, i) => {
-              const actualIndex = i + index;
+            {sortedMoments.slice(index, index + 3).map((moment, i) => {
               const isTop = i === 0;
-              const offset = i * 5;
+              // Reduced stacking offset for cleaner look on mobile
+              const offset = i * 10;
+              const scale = 1 - i * 0.05;
               
+              // Simplified transform calculation
+              const rotation = isTop ? 0 : (i % 2 === 0 ? 3 : -3);
+
               return (
                 <motion.div
                   key={moment.id}
-                  initial={{ scale: 0.8, opacity: 0, y: 50 }}
+                  initial={false} // Skip initial animation for better perf
                   animate={{ 
-                    scale: isTop ? 1 : 0.95 - i * 0.03, 
-                    y: isTop ? 0 : offset * 4,
-                    opacity: 1 - i * 0.15,
-                    rotate: isTop ? 0 : (actualIndex % 2 === 0 ? 3 : -3),
+                    scale, 
+                    y: offset,
+                    opacity: 1 - i * 0.2, // Fade out back cards
+                    rotate: rotation,
+                    zIndex: 3 - i,
                   }}
                   exit={{ 
-                    x: 300, 
+                    x: 200, 
                     opacity: 0, 
-                    rotate: 25,
-                    scale: 0.8,
-                    transition: { duration: 0.5, ease: "easeInOut" } 
+                    rotate: 15,
+                    transition: { duration: 0.3, ease: "easeIn" } 
                   }}
                   transition={{ 
-                    type: 'spring', 
-                    damping: 25, 
-                    stiffness: 260,
-                    opacity: { duration: 0.2 }
+                    type: "spring", 
+                    stiffness: 300, 
+                    damping: 25,
+                    mass: 0.8 // Lighter feeling
                   }}
-                  className="absolute inset-0 rounded-2xl overflow-hidden shadow-2xl"
+                  className="absolute inset-0 rounded-2xl overflow-hidden shadow-xl bg-white"
                   style={{ 
-                    zIndex: sortedMoments.length - actualIndex,
                     transformOrigin: 'bottom center',
-                    background: 'linear-gradient(145deg, #ffffff 0%, #fff5f7 100%)',
+                    background: '#fff', // Solid color instead of gradient
                   }}
                 >
-                  {/* Polaroid-style frame */}
-                  <div className="relative w-full h-full p-4 pb-16">
-                    {/* Image Container with enhanced styling */}
-                    <div className="relative w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden rounded-xl shadow-inner">
+                  {/* Simplified Polaroid Frame */}
+                  <div className="relative w-full h-full p-3 pb-12 flex flex-col items-center">
+                    {/* Image Area - Hardware accelerated */}
+                    <div className="relative w-full flex-1 bg-gray-100 rounded-lg overflow-hidden translate-z-0">
                       {moment.type === 'video' ? (
                         <video 
                           src={moment.src} 
@@ -289,128 +262,45 @@ export default function Moments() {
                         <img 
                           src={moment.src} 
                           alt={moment.caption} 
-                          className="w-full h-full object-cover pointer-events-none" 
+                          className="w-full h-full object-cover pointer-events-none"
+                          loading={i === 0 ? "eager" : "lazy"}
                         />
                       )}
                       
-                      {/* Romantic overlay gradient on hover */}
-                      {isTop && (
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-t from-pink-500/30 via-transparent to-transparent"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: isHovering ? 1 : 0 }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      )}
-                      
-                      {/* ID Badge with better styling */}
-                      <motion.div 
-                        className="absolute top-3 left-3 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-lg"
-                        animate={{
-                          boxShadow: isTop && isHovering 
-                            ? '0 0 20px rgba(236, 72, 153, 0.6)' 
-                            : '0 4px 6px rgba(0, 0, 0, 0.1)',
-                        }}
-                      >
+                      {/* ID Badge - Static, no gradients/shadows */}
+                      <div className="absolute top-2 left-2 bg-pink-600 text-white px-2 py-1 rounded text-xs font-bold">
                         #{moment.id}
-                      </motion.div>
+                      </div>
 
-                      {/* Video indicator */}
+                      {/* Video indicator - Simplified */}
                       {moment.type === 'video' && (
-                        <motion.div 
-                          className="absolute top-3 right-3 bg-black/70 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1"
-                          animate={{
-                            scale: [1, 1.1, 1],
-                          }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                          }}
-                        >
-                          <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                        <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+                          <div className="w-1.5 h-1.5 bg-red-500 rounded-full" />
                           VIDEO
-                        </motion.div>
+                        </div>
                       )}
                     </div>
 
-                    {/* Caption at the bottom (Polaroid style) */}
-                    <motion.div 
-                      className="absolute bottom-4 left-4 right-4 text-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <p className="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                    {/* Caption - No expensive background clips */}
+                    <div className="mt-4 text-center">
+                      <p className="text-xl font-bold text-gray-800 font-serif">
                         {moment.caption}
                       </p>
-                      
-                      {/* Decorative line */}
-                      <motion.div 
-                        className="mt-2 mx-auto w-16 h-1 bg-gradient-to-r from-pink-400 via-rose-400 to-purple-400 rounded-full"
-                        animate={{
-                          width: isTop && isHovering ? 80 : 64,
-                        }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    </motion.div>
+                      <div className="mt-2 w-12 h-1 bg-pink-300 rounded-full mx-auto" />
+                    </div>
 
-                    {/* Corner decorations (only on top card) */}
+                    {/* Static Heart Decoration (only top card) */}
                     {isTop && (
-                      <>
-                        <motion.div
-                          className="absolute top-2 right-2 text-pink-300"
-                          animate={{
-                            rotate: [0, 10, -10, 0],
-                            scale: [1, 1.2, 1],
-                          }}
-                          transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                          }}
-                        >
-                          <Heart size={20} fill="currentColor" />
-                        </motion.div>
-                        <motion.div
-                          className="absolute bottom-20 right-2 text-purple-300"
-                          animate={{
-                            rotate: [0, -10, 10, 0],
-                            scale: [1, 1.2, 1],
-                          }}
-                          transition={{
-                            duration: 3,
-                            repeat: Infinity,
-                            delay: 1.5,
-                          }}
-                        >
-                          <Heart size={16} fill="currentColor" />
-                        </motion.div>
-                      </>
+                      <div className="absolute top-1 right-1 text-pink-400 opacity-80">
+                        <Heart size={18} fill="currentColor" />
+                      </div>
                     )}
                   </div>
-
-                  {/* Shimmer effect on top card */}
-                  {isTop && (
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                      animate={{
-                        x: ['-100%', '200%'],
-                      }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        repeatDelay: 2,
-                        ease: "easeInOut"
-                      }}
-                      style={{ 
-                        transform: 'skewX(-20deg)',
-                      }}
-                    />
-                  )}
                 </motion.div>
               );
             }).reverse()}
           </AnimatePresence>
-        </motion.div>
+        </div>
 
 
         {/* Progress indicator */}
