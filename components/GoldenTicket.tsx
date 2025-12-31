@@ -56,8 +56,8 @@ export default function GoldenTicket({ onComplete }: { onComplete: () => void })
 
         <p className="text-gray-400 text-sm tracking-widest mb-6">VALID FOR EVERY DAY AHEAD</p>
         
-        <p className="text-2xl font-handwriting text-white italic mb-8">
-          "Unlimited Love & Smiles"
+        <p className="text-4xl font-handwriting text-white italic mb-8">
+          "Unlimited Messages"
         </p>
 
         <p className="text-xs text-gray-500 mb-8">No expiration date • Non-transferable</p>

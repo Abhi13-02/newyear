@@ -1,23 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Intro from '@/components/Intro';
 import Distractions from '@/components/Distractions';
 import GoldenTicket from '@/components/GoldenTicket';
 import Moments from '@/components/Moments';
-import MainContent from '@/components/MainContent';
 
 export default function Home() {
   const [stage, setStage] = useState(0);
 
   // 0: Intro (Heart Hold)
-  // 1: Distractions (Cards)
-  // 2: Golden Ticket (Reward)
-  // 3: Moments (Photo Stack)
-  // 4: Main Content (Website)
+  // 1: Golden Ticket (Reward)
+  // 2: Distractions (Cards)
+  // 3: Moments (Photo Stack) -> HappyNewYear (handled internally)
 
-  const handleNext = () => setStage((prev) => prev + 1);
+  useEffect(() => {
+    console.log('>>> STAGE CHANGED TO:', stage);
+  }, [stage]);
+
+  const handleNext = useCallback(() => {
+    console.log('handleNext called, current stage:', stage);
+    setStage((prev) => {
+      console.log('Moving from stage', prev, 'to stage', prev + 1);
+      return prev + 1;
+    });
+  }, []); // No dependencies needed since we use function form of setState
 
   return (
     <main className="h-screen w-full relative overflow-auto text-white">
@@ -72,19 +80,7 @@ export default function Home() {
             exit={{ opacity: 0, x: -100, rotate: -10 }}
             transition={{ duration: 0.6 }}
           >
-            <Moments onComplete={handleNext} />
-          </motion.div>
-        )}
-
-        {stage === 4 && (
-          <motion.div
-            key="main"
-            className="absolute inset-0 overflow-y-auto"
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <MainContent />
+            <Moments />
           </motion.div>
         )}
       </AnimatePresence>

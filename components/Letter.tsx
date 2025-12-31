@@ -221,33 +221,32 @@ export default function Letter() {
                   className="space-y-6 text-amber-900/90 font-serif leading-relaxed text-base md:text-lg"
                 >
                   <p className="first-letter:text-5xl first-letter:font-bold first-letter:text-rose-500 first-letter:mr-1 first-letter:float-left">
-                    As another year comes to an end, I find myself thinking about all the beautiful moments we've shared. 
+                    As another year comes to an end, I find myself thinking about how the fuck its been sooooo long , this is our 3rd new year !!!! All the beautiful moments we've shared. 
                     Every laugh, every smile, every quiet moment together—they all mean the world to me.
                   </p>
 
                   <p>
                     You bring so much light into my life. Your presence makes ordinary days feel extraordinary, 
-                    and your love gives me a sense of peace I never knew I needed. With you, everything feels right.
+                    and your presence gives me a sense of peace I never knew I needed. With you, everything feels right.
                   </p>
 
                   <p>
-                    As we step into this new year together, I want you to know how deeply I cherish you. 
-                    My wish for us is simple: more laughter, more adventures, more of those little moments that make 
-                    my heart skip a beat. More of everything that makes us... us.
+                    As we step into this new year together, I want you to know how deeply I want you in my life. 
+                    My wish for us is simple: more movies/series, more travel, more of those discussions on philosophy, and most important GOOGLE and moneyyyyy.
                   </p>
 
                   <p className="text-center italic text-rose-700 font-bold text-xl mt-8">
-                    Here's to another year of loving you with all my heart.
+                    Promise me to that you will always be there for meeeeeeee.
                   </p>
 
                   <p className="text-center text-rose-600 text-2xl mt-6">
-                    ♡ Happy New Year, My Love ♡
+                    ♡ Happy New Year, My kucchi puchhi tinki pinki lukku mukku... ♡
                   </p>
 
                   <div className="text-right mt-12 font-cursive text-xl text-amber-800">
                     <p className="mb-2">Forever yours,</p>
                     <p className="text-2xl font-bold bg-gradient-to-r from-rose-600 to-pink-500 bg-clip-text text-transparent">
-                      Your Sahiba 💕
+                      Your chidkockla 💕
                     </p>
                   </div>
                 </motion.div>
@@ -260,7 +259,7 @@ export default function Letter() {
                   className="mt-12 text-center space-y-4"
                 >
                   <p className="text-rose-400 text-sm opacity-60 font-serif">
-                    ✨ With all my love ✨
+                    ✨ With all my chidkockla pan ✨
                   </p>
                   
                   <motion.button
@@ -282,7 +281,7 @@ export default function Letter() {
                       }}
                     />
                     <span className="relative z-10 flex items-center gap-2 justify-center">
-                      🎉 Let's Celebrate! 🎉
+                       Let's Celebrate! 🎉
                     </span>
                   </motion.button>
                   

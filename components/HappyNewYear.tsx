@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Particle {
@@ -23,14 +23,12 @@ export default function HappyNewYear() {
   const [particles, setParticles] = useState<Particle[]>([]);
   const [fireworks, setFireworks] = useState<Firework[]>([]);
   const [tapCount, setTapCount] = useState(0);
-  const [showMessage, setShowMessage] = useState(false);
-
-  // Auto-show special message after 3 taps
-  useEffect(() => {
-    if (tapCount >= 3 && !showMessage) {
-      setShowMessage(true);
-    }
-  }, [tapCount, showMessage]);
+  
+  // Secret rapid-tap feature
+  const [rapidTaps, setRapidTaps] = useState(0);
+  const [showSurprise, setShowSurprise] = useState(false);
+  const [lastTapTime, setLastTapTime] = useState(0);
+  const rapidTapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-create random fireworks
   useEffect(() => {
@@ -40,6 +38,28 @@ export default function HappyNewYear() {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Reset rapid taps if user stops tapping
+  useEffect(() => {
+    if (rapidTaps > 0 && rapidTaps < 30) {
+      // Clear existing timeout
+      if (rapidTapTimeoutRef.current) {
+        clearTimeout(rapidTapTimeoutRef.current);
+      }
+      
+      // Set new timeout to reset if no tap within 1.5 seconds
+      rapidTapTimeoutRef.current = setTimeout(() => {
+        console.log('Rapid tap timeout - resetting');
+        setRapidTaps(0);
+      }, 1500);
+    }
+
+    return () => {
+      if (rapidTapTimeoutRef.current) {
+        clearTimeout(rapidTapTimeoutRef.current);
+      }
+    };
+  }, [rapidTaps]);
 
   const createFirework = (xPercent: number, yPercent: number) => {
     const id = Date.now() + Math.random();
@@ -86,6 +106,29 @@ export default function HappyNewYear() {
     createParticles(x, y);
     createFirework(x, y);
     setTapCount(prev => prev + 1);
+    
+    // Check for rapid taps
+    const now = Date.now();
+    const timeSinceLastTap = now - lastTapTime;
+    
+    // If tapped within 500ms, count as rapid tap
+    if (timeSinceLastTap < 500 || rapidTaps === 0) {
+      const newRapidTaps = rapidTaps + 1;
+      setRapidTaps(newRapidTaps);
+      console.log('Rapid tap:', newRapidTaps, '/ 30');
+      
+      // Check if we reached 30 rapid taps
+      if (newRapidTaps >= 30 && !showSurprise) {
+        console.log('SECRET UNLOCKED!');
+        setShowSurprise(true);
+      }
+    } else {
+      // Too slow, reset
+      console.log('Tap too slow, resetting');
+      setRapidTaps(1);
+    }
+    
+    setLastTapTime(now);
   };
 
   return (
@@ -295,7 +338,7 @@ export default function HappyNewYear() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
         >
-          Here's to new adventures, endless laughter, and making beautiful memories together! 🌟
+✨ Tap anywhere to celebrate! ✨
         </motion.p>
 
         {/* Tap instruction */}
@@ -311,62 +354,9 @@ export default function HappyNewYear() {
           }}
         >
           <p className="text-white/80 text-sm md:text-base">
-            ✨ Tap anywhere to celebrate! ✨
+             myyyyy kittttuuuu dont ever be in a bad moood this year!
           </p>
         </motion.div>
-
-        {/* Special message after 3 taps */}
-        <AnimatePresence>
-          {showMessage && (
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <motion.div
-                className="bg-gradient-to-br from-pink-500 via-rose-500 to-purple-600 p-8 md:p-12 rounded-2xl shadow-2xl max-w-md mx-4"
-                initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
-              >
-                <motion.div
-                  animate={{
-                    rotate: [0, 10, -10, 0],
-                  }}
-                  transition={{
-                    duration: 0.5,
-                    repeat: 3,
-                  }}
-                >
-                  <h3 className="text-3xl md:text-4xl font-bold text-white text-center mb-4">
-                    🎉 Surprise! 🎉
-                  </h3>
-                  <p className="text-white text-lg md:text-xl text-center leading-relaxed">
-                    You found the secret celebration! 
-                    <br /><br />
-                    May this year bring you everything your heart desires and more! 💖
-                    <br /><br />
-                    <span className="text-2xl">Cheers to us! 🥂</span>
-                  </p>
-                </motion.div>
-                
-                <motion.button
-                  className="mt-6 w-full bg-white text-purple-600 font-bold py-3 px-6 rounded-full hover:bg-pink-100 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowMessage(false);
-                    setTapCount(0);
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Keep Celebrating! 🎊
-                </motion.button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Confetti elements */}
         {[...Array(50)].map((_, i) => (
@@ -390,6 +380,111 @@ export default function HappyNewYear() {
             }}
           />
         ))}
+
+        {/* Rapid Tap Progress Meter */}
+        <AnimatePresence>
+          {rapidTaps > 0 && rapidTaps < 30 && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
+            >
+              <div className="bg-black/80 backdrop-blur-md rounded-full px-6 py-3 shadow-2xl border-2 border-white/20">
+                <p className="text-white text-sm mb-2 text-center font-bold">Keep tapping fast! 🔥</p>
+                <div className="w-64 h-3 bg-gray-700 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(rapidTaps / 30) * 100}%` }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  />
+                </div>
+
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Surprise Card */}
+        <AnimatePresence>
+          {showSurprise && (
+            <motion.div
+              className="fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-md z-[100] pointer-events-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <motion.div
+                className="bg-gradient-to-br from-purple-600 via-pink-600 to-rose-600 p-10 md:p-16 rounded-3xl shadow-2xl max-w-lg mx-4 relative overflow-hidden"
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              >
+                {/* Sparkle effects */}
+                {[...Array(20)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute text-yellow-300"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      fontSize: `${12 + Math.random() * 20}px`,
+                    }}
+                    animate={{
+                      opacity: [0, 1, 0],
+                      scale: [0, 1.5, 0],
+                      rotate: [0, 360],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      delay: i * 0.1,
+                    }}
+                  >
+                    ✨
+                  </motion.div>
+                ))}
+
+                <motion.div
+                  animate={{
+                    rotate: [0, 5, -5, 0],
+                  }}
+                  transition={{
+                    duration: 0.5,
+                    repeat: 3,
+                  }}
+                >
+                  <h3 className="text-4xl md:text-5xl font-black text-white text-center mb-6 relative z-10">
+                     SURPRISE!
+                  </h3>
+                  <div className="text-6xl text-center mb-6 relative z-10">🎁</div>
+                  <p className="text-white text-xl md:text-2xl text-center leading-relaxed mb-6 relative z-10 font-bold">
+                    Ohh! So you have found the secret gift!
+                  </p>
+                  <p className="text-white/90 text-lg text-center leading-relaxed mb-8 relative z-10">
+                    Congratulations! 🎊
+                    <br />
+                    Something special is coming soon... 💝
+                  </p>
+                  
+                  <motion.button
+                    className="w-full bg-white text-purple-600 font-bold py-4 px-8 rounded-full hover:bg-pink-100 transition-colors relative z-10 shadow-xl"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowSurprise(false);
+                      setRapidTaps(0);
+                    }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    keep waiting! ✨
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
